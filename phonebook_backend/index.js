@@ -1,8 +1,11 @@
 const express = require('express')
 const app = express()
+// https://github.com/expressjs/morgan
+const morgan = require('morgan')
 
 // activates the json-parser and implement an initial handler for dealing with the HTTP POST requests
 app.use(express.json())
+app.use(morgan('tiny'))
 
 let persons = [
     { 
