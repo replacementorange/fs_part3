@@ -1,6 +1,9 @@
 const express = require('express')
 const app = express()
 
+// activates the json-parser and implement an initial handler for dealing with the HTTP POST requests
+app.use(express.json())
+
 let persons = [
     { 
       "id": 1,
@@ -62,6 +65,28 @@ app.delete('/api/persons/:id', (request, response) => {
   persons = persons.filter(person => person.id !== id)
 
   response.status(204).end()
+})
+
+// Adding new entry to the phonebook
+app.post('/api/persons', (request, response) => {
+  const body = request.body
+
+  if (!body.name) {
+    return response.status(400).json({ 
+      error: 'name missing' 
+    })
+  }
+
+  const person = {
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+    id: Math.floor(Math.random() * 5000),
+    name: body.name,
+    number: body.number || undefined, // If there is no number then it is undefined
+  }
+
+  persons = persons.concat(person)
+
+  response.json(person)
 })
 
 const PORT = 3001
