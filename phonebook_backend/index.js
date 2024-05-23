@@ -24,14 +24,17 @@ let persons = [
     }
 ]
 
+// Home page
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
   })
 
+// Persons in json format
 app.get('/api/persons', (request, response) => {
     response.json(persons)
   })
 
+// Info page 
 app.get('/info', (request, response) => {
     const people = persons.length
     const date = new Date
@@ -40,6 +43,18 @@ app.get('/info', (request, response) => {
       <br/> ${date}</p>
     `)
   })
+
+// Single phonebook entry by ID
+app.get('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  const person = persons.find(person => person.id === id)
+  
+  if (person) {
+    response.json(person)
+  } else {
+    response.status(404).end()
+  }
+})
 
 const PORT = 3001
 app.listen(PORT, () => {
