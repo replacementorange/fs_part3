@@ -5,7 +5,11 @@ const morgan = require('morgan')
 
 // activates the json-parser and implement an initial handler for dealing with the HTTP POST requests
 app.use(express.json())
-app.use(morgan('tiny'))
+//app.use(morgan('tiny'))
+// https://github.com/expressjs/morgan#creating-new-tokens
+// morgan.token('type', function (req, res) { return req.headers['content-type'] })
+morgan.token('body', (req) => JSON.stringify(req.body))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 let persons = [
     { 
