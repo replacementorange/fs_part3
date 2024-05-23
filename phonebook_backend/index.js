@@ -71,9 +71,23 @@ app.delete('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
+  // Checks if name is missing
   if (!body.name) {
     return response.status(400).json({ 
-      error: 'name missing' 
+      error: 'name is missing' 
+    })
+  }
+  // Checks if number is missing
+  if (!body.number) {
+    return response.status(400).json({ 
+      error: 'number is missing' 
+    })
+  }
+
+  // Checks if name already exists
+  if (persons.filter(person => person.name == body.name).length){
+    return response.status(400).json({ 
+      error: 'name must be unique'
     })
   }
 
@@ -81,7 +95,7 @@ app.post('/api/persons', (request, response) => {
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
     id: Math.floor(Math.random() * 5000),
     name: body.name,
-    number: body.number || undefined, // If there is no number then it is undefined
+    number: body.number //|| undefined, Nope. exercise 3.6
   }
 
   persons = persons.concat(person)
