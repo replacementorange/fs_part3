@@ -2,6 +2,8 @@ const express = require('express')
 const app = express()
 // https://github.com/expressjs/morgan
 const morgan = require('morgan')
+// https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+const cors = require('cors')
 
 // activates the json-parser and implement an initial handler for dealing with the HTTP POST requests
 app.use(express.json())
@@ -10,6 +12,7 @@ app.use(express.json())
 // morgan.token('type', function (req, res) { return req.headers['content-type'] })
 morgan.token('body', (req) => JSON.stringify(req.body))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
+app.use(cors())
 
 let persons = [
     { 
@@ -110,7 +113,7 @@ app.post('/api/persons', (request, response) => {
   response.json(person)
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
