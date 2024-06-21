@@ -11,7 +11,6 @@ const url =
   `mongodb+srv://fullstack:${password}@fspart3.rd5qcfi.mongodb.net/personApp?retryWrites=true&w=majority&appName=fspart3`
 
 mongoose.set('strictQuery',false)
-
 mongoose.connect(url)
 
 // Person schema
@@ -21,6 +20,17 @@ const personSchema = new mongoose.Schema({
 })
 
 const Person = mongoose.model('Person', personSchema)
+
+// Display entries
+if (process.argv.length === 3) {
+
+  Person.find({}).then(result => {
+      console.log('phonebook:')
+      result.forEach(person => {
+      console.log( person.name, person.number)
+      })
+      mongoose.connection.close()
+  })
 
 // Adding
 if (process.argv.length === 5) {
@@ -39,15 +49,4 @@ if (process.argv.length === 5) {
         mongoose.connection.close()
     })
 }
-
-// Display entries
-if (process.argv.length === 3) {
-
-    Person.find({}).then(result => {
-        console.log('phonebook:')
-        result.forEach(person => {
-        console.log( person.name, person.number)
-        })
-        mongoose.connection.close()
-    })
 }
