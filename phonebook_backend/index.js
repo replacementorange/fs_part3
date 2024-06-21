@@ -5,12 +5,13 @@ const morgan = require('morgan')
 const cors = require('cors')
 const Person = require('./models/person')
 
+app.use(express.static('dist'))
 app.use(express.json())
 morgan.token('body', (req) => JSON.stringify(req.body))
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 app.use(cors())
-app.use(express.static('dist'))
+
 
 // Home page
 app.get('/', (request, response) => {
@@ -35,18 +36,25 @@ app.get('/info', (request, response) => {
 })
 
 // Single phonebook entry by ID
-app.get('/api/persons/:id', (request, response) => {
-  Person.findById(request.params.id).then(person => {
-    response.json(person)
+app.get('/api/persons/:id', (request, response, next) => {
+  Person.findById(request.params.id)
+    .then(person => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
   })
+    .catch(error => next(error))
 })
 
 // Delete
-app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(person => person.id !== id)
-
-  response.status(204).end()
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 // Adding new entry to the phonebook
