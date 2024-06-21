@@ -38,22 +38,14 @@ app.get('/info', (request, response) => {
 // Single phonebook entry by ID
 app.get('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id)
-    .then(person => {
-      if (person) {
-        response.json(person)
-      } else {
-        response.status(404).end()
-      }
-  })
+    .then(person => response.json(person))
     .catch(error => next(error))
 })
 
 // Delete
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
-    .then(result => {
-      response.status(204).end()
-    })
+    .then(result => response.status(204).end())
     .catch(error => next(error))
 })
 
@@ -90,6 +82,28 @@ app.post('/api/persons', (request, response) => {
     response.json(savedPerson)
   })
 })
+
+// Error handling-------------------------------
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+// unknown endpoint
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+
+// handler of requests with result to errors
+app.use(errorHandler)
+// Error handling---------------------------
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
